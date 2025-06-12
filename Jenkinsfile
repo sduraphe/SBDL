@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = '/home/ec2-user/.ssh/your-key.pem'   // Replace this
+        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'   // Replace this
         SSH_USER = 'ec2-user'
         TARGET_IP = '35.86.216.16'
     }
