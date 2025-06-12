@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'   // Replace this
+        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'
         SSH_USER = 'ec2-user'
         TARGET_IP = '35.87.63.53'
     }
@@ -10,25 +10,28 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh '/usr/local/bin/pipenv --python python3 sync'
+                sh '/usr/local/bin/pipenv install --dev'
             }
         }
+
         stage('Test') {
             steps {
                 sh '/usr/local/bin/pipenv run pytest'
             }
         }
+
         stage('Package') {
             when {
                 anyOf {
-                    branch "master"
-                    branch "release"
+                    branch 'master'
+                    branch 'release'
                 }
             }
             steps {
                 sh 'zip -r sbdl.zip lib'
             }
         }
+
         stage('Release') {
             when {
                 branch 'release'
@@ -39,6 +42,7 @@ pipeline {
                 """
             }
         }
+
         stage('Deploy') {
             when {
                 branch 'master'
