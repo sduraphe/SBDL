@@ -2,21 +2,28 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'
+        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'  // Replace if needed
         SSH_USER = 'ec2-user'
         TARGET_IP = '35.87.63.53'
+        PIPENV = '/usr/local/bin/pipenv'
     }
 
     stages {
-        stage('Build') {
+        stage('Clean Workspace') {
             steps {
-                sh '/usr/local/bin/pipenv install --dev'
+                cleanWs()
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '${PIPENV} install --ignore-pipfile'
             }
         }
 
         stage('Test') {
             steps {
-                sh '/usr/local/bin/pipenv run pytest'
+                sh '${PIPENV} run pytest'
             }
         }
 
@@ -38,7 +45,9 @@ pipeline {
             }
             steps {
                 sh """
-                scp -i ${SSH_KEY} -o 'StrictHostKeyChecking no' -r sbdl.zip log4j2.properties sbdl_main.py sbdl_submit.sh conf ${SSH_USER}@${TARGET_IP}:/home/${SSH_USER}/sbdl-qa
+                    scp -i ${SSH_KEY} -o 'StrictHostKeyChecking no' \
+                    sbdl.zip log4j2.properties sbdl_main.py sbdl_submit.sh conf \
+                    ${SSH_USER}@${TARGET_IP}:/home/${SSH_USER}/sbdl-qa
                 """
             }
         }
@@ -49,7 +58,9 @@ pipeline {
             }
             steps {
                 sh """
-                scp -i ${SSH_KEY} -o 'StrictHostKeyChecking no' -r sbdl.zip log4j2.properties sbdl_main.py sbdl_submit.sh conf ${SSH_USER}@${TARGET_IP}:/home/${SSH_USER}/sbdl-prod
+                    scp -i ${SSH_KEY} -o 'StrictHostKeyChecking no' \
+                    sbdl.zip log4j2.properties sbdl_main.py sbdl_submit.sh conf \
+                    ${SSH_USER}@${TARGET_IP}:/home/${SSH_USER}/sbdl-prod
                 """
             }
         }
