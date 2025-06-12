@@ -2,21 +2,20 @@ pipeline {
     agent any
 
     environment {
-        PIPENV = '/var/lib/jenkins/.local/bin/pipenv'
-        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'   // 🔁 Replace with your actual .pem path
-        SSH_USER = 'ec2-user'                          // 🔁 Replace if different (e.g., ubuntu)
+        SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'   // 🔁 Replace with your actual .pem file path
+        SSH_USER = 'ec2-user'
         TARGET_IP = '35.86.216.16'
     }
 
     stages {
         stage('Build') {
             steps {
-                sh '${PIPENV} --python python3 sync'
+                sh '/var/lib/jenkins/.local/bin/pipenv --python python3 sync'
             }
         }
         stage('Test') {
             steps {
-                sh '${PIPENV} run pytest'
+                sh '/var/lib/jenkins/.local/bin/pipenv run pytest'
             }
         }
         stage('Package') {
