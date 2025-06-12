@@ -8,16 +8,18 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Clean Workspace') {
             steps {
-                sh '/usr/local/bin/pipenv --python python3 sync'
+                cleanWs()
             }
         }
-        stage('Test') {
+
+        stage('Install Dependencies') {
             steps {
-                sh '/usr/local/bin/pipenv run pytest'
+                sh '/usr/local/bin/pipenv install --ignore-pipfile'
             }
         }
+
         stage('Package') {
             when {
                 anyOf {
@@ -29,6 +31,7 @@ pipeline {
                 sh 'zip -r sbdl.zip lib'
             }
         }
+
         stage('Release') {
             when {
                 branch 'release'
@@ -39,6 +42,7 @@ pipeline {
                 """
             }
         }
+
         stage('Deploy') {
             when {
                 branch 'master'
