@@ -4,7 +4,7 @@ pipeline {
     environment {
         SSH_KEY = '/home/ec2-user/.ssh/oregon-pk.pem'   // Replace this
         SSH_USER = 'ec2-user'
-        TARGET_IP = '35.86.216.16'
+        TARGET_IP = '35.87.63.53'
     }
 
     stages {
